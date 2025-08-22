@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO DO LIST</title>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <header> <span><h1>QuickNote</h1></span> <span class="span">organisez vos tâches en un clin d'oeil</span></header>
+    <div id="div">
+        <div>
+            <p style="color: #3ad07c;">Filter</p>
+        </div>
+        <div id="btn">
+            <button id="all" class="bt" onclick="displayAll()">All</button><button id="donet" class="bt" onclick="displayDone()">Finished</button ><button class="bt" id="current" onclick="displayCurrent()">Current</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="head">
+            <input type="text" placeholder="The task to add" class="ii">
+    <button class="button" onclick= "addTask()" >Add task </button>
+        </div>
+         <ol class="ull"><h2>My task list </h2></ol>
+    </div>
+    <style>
+        body{
+            background-color: rgb(48, 46, 46);
+        }
+        .head{
+            display: flex;justify-content: space-between; height:8vh;
+        }
+        @media(min-width:750px){
+            .ull{
+                width: 60%;
+            }
+
+        }
+        @media(min-width:1400px){
+            body,input ,div {
+                font-size: 1.4rem;
+            }
+        }
+        @media(min-width:2000px){
+            body,input ,div,button {
+                font-size: 1.9rem;
+            }
+        }
+        @media(max-width:380px){
+            h1, .span{
+                font-size: 0.8rem;
+            }
+        }
+        input {
+            
+            width:78% ; height: 100%;
+            background-color: #3ad07c;box-sizing: border-box; color:rgb(48, 46, 46) ;
+        }
+        .bt{
+             space-between; margin: 0.5em;  border: 0.1em solid aquamarine;padding: 0px;
+            box-sizing: border-box; height: 2rem; border-radius: 0.2rem;
+        }
+        
+        #sqr1, #sqr2{
+            width: 20%;
+        }
+        #sqr{
+            background-color: black; color: #3ad07c;width: 50%; height: 100%; box-sizing: border-box;
+            border: 0.1em solid black;
+            box-sizing: border-box;
+        }
+       button {
+        background-color: #3ad07c;;width: 20%; height: 100%;color:rgb(48, 46, 46) ; font-weight: bold; font-family: sans-serif;
+        transition: all 1.5s ease;
+       }
+        button:hover{
+            border: none;
+            box-shadow:  -5px -5px 5px black; background-color: aquamarine;
+        }
+
+        ol{
+            color: #3ad07c; box-sizing: border-box;
+            padding: 1em; border: 0.7em solid ; width: 100%;
+            margin-top: 5%;
+        }
+        h1{
+            font-family: sans-serif;
+        }
+        header{
+            color: #3ad07c; display: flex; align-items: center;justify-content: space-between;border: 0.1em solid ; margin-bottom: 1em; transition: all 2s ease;
+        }
+        #div{
+            display: flex; flex-direction: column; ;align-items: center;
+        }
+        #btn{
+            width: 100%;
+        }
+        .container{
+            margin-top: 1em; box-sizing: border-box;
+        }
+        .completed{
+            text-decoration: line-through; opacity: 0.4; /*color: black;*/
+        }
+        .colr{
+            color: #d0d03a;
+        }
+    </style>
+    <script>
+        let trueTasks=[],allTasks=[],tasksfinished=[],currentTask=[];
+        function creatLi(allTask){
+            if(!allTask || !allTask.text){
+                return //Prevent adding an empty ore one that only contains spaces
+            };
+            let lli =document.createElement("li");
+            let container =document.createElement("div");
+            let span =document.createElement("span");
+            let square1 =document.createElement("button");
+            let square2 =document.createElement("button");
+            lli.append(span,container);
+            container.append(square1 ,square2);
+            span.innerHTML=allTask.text;
+            lli.style.display="flex"; 
+           lli.setAttribute("data-done" ,allTask.done);//create an attribute with value of alltask.done to use for filtering
+            lli.style.justifyContent="space-between";
+            container.style.display="flex";
+            container.style.justifyContent="space-between";
+            span.style.width="75%";
+            span.style.border="0.1em solid aquamarine";
+            span.style.padding="0.1em"
+            container.style.width="22%";
+            square1.style.width="40%";
+            square2.style.width="40%";
+            square1.style.border="0.1em solid aquamarine";
+            square2.style.border="0.1em solid aquamarine";
+            square2.style.backgroundColor="#ffcc00";
+            square2.style.color="white";
+            if(allTask.done){
+                span.classList.add("completed");square1.innerHTML="&check;"
+            }
+            square1.addEventListener("click" ,function(){
+                span.classList.toggle("completed");
+                if(square1.textContent===""){
+                     square1.innerHTML= "&check;";
+                }
+                else{
+                     square1.textContent= "";
+                }
+                let isDone=span.classList.contains("completed"); // know the completed or not completed stats
+                lli.setAttribute("data-done" ,isDone); 
+                square1.innerHTML=isDone ? "&check;":" ";
+                let tasklist = JSON.parse(localStorage.getItem("task"))||[];  
+                tasklist=tasklist.map(t=> {
+                    if(t.text===allTask.text){
+                        return{ ...t , done:isDone};
+                    }; return t;
+                });
+                localStorage.setItem("task" ,JSON.stringify(tasklist))
+            })
+            square2.innerHTML=`<svg width="1em" height="80%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+            lli.style.margin="0.6EM";
+            let ol =document.querySelector(".ull");
+            ol.appendChild(lli);
+            square2.addEventListener("click" , function (){
+                lli.remove();
+                let taskl = JSON.parse(localStorage.getItem("task"))||[];
+                taskl=taskl.filter(t=> t.text!==allTask.text );
+                localStorage.setItem("task" ,JSON.stringify(taskl)); 
+                trueTasks = JSON.parse(localStorage.getItem("task") );
+            }) 
+        }
+        function addTask(){
+            let taskT = document.querySelector(".ii").value.trim();
+            let taskl = JSON.parse(localStorage.getItem("task"))||[]; taskl.push({text:taskT,done:false});
+            localStorage.setItem("task" ,JSON.stringify(taskl)); 
+            trueTasks = JSON.parse(localStorage.getItem("task") );
+            creatLi({text:taskT,done:false} );document.querySelector(".ii").value="";
+        }
+        document.querySelector('input').addEventListener("keydown" ,(event)=>{
+            if(event.key==="Enter"){
+                addTask();
+            }
+        }) ;
+        window.addEventListener("DOMContentLoaded" ,() => {
+            allTasks=JSON.parse(localStorage.getItem("task") )||[];
+            allTasks.forEach(element => { creatLi(element); 
+            }); 
+        tasksfinished=allTasks.filter(t=>t.done===true);
+        currentTask=allTasks.filter(t=> t.done===false);
+        } );
+        //filter tasks
+        function displayDone() {
+            document.querySelectorAll("ol.ull li").forEach(li=>{
+                if(li.getAttribute("data-done")==="false"){
+                    li.style.display="none";
+                }
+                else{
+                    li.style.display="flex";
+                }
+            })
+        }
+        function displayCurrent() {
+            document.querySelectorAll("ol.ull li").forEach(li=>{
+                if(li.getAttribute("data-done")==="true"){
+                    li.style.display="none";
+                }
+                else{
+                    li.style.display="flex";
+                }
+            })
+        }
+        function displayAll() {
+            document.querySelectorAll("ol.ull li").forEach(li=>{  
+                    li.style.display="flex";
+            })
+        }
+        document.querySelector("#all").addEventListener("click" ,displayAll);
+        document.querySelector("#donet").addEventListener("click" ,displayDone);
+        document.querySelector("#current").addEventListener("click" ,displayCurrent);
+        setInterval(()=>{
+            document.querySelector("header").classList.toggle("colr")
+        }, 2000);
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker enregistré', reg))
+            .catch(err => console.log('Erreur d’enregistrement du Service Worker', err));
+  });
+}
+    </script>
+</body>
+</html>
